@@ -1333,7 +1333,7 @@ class API(ModelView):
         else:
             self.session.delete(result)
             num_deleted = 1
-        self.session.commit()
+        self.session.flush()
         result = dict(num_deleted=num_deleted)
         for postprocessor in self.postprocessors['DELETE_MANY']:
             postprocessor(result=result, search_params=search_params)
@@ -1389,7 +1389,7 @@ class API(ModelView):
         elif inst is not None:
             self.session.delete(inst)
             was_deleted = len(self.session.deleted) > 0
-        self.session.commit()
+        self.session.flush()
         for postprocessor in self.postprocessors['DELETE_SINGLE']:
             postprocessor(was_deleted=was_deleted)
         return {}, 204 if was_deleted else 404
@@ -1447,7 +1447,7 @@ class API(ModelView):
             instance = self.deserialize(data)
             # Add the created model to the session.
             self.session.add(instance)
-            self.session.commit()
+            self.session.flush()
             # Get the dictionary representation of the new instance as it
             # appears in the database.
             result = self.serialize(instance)
@@ -1577,7 +1577,7 @@ class API(ModelView):
                     for field, value in data.items():
                         setattr(item, field, value)
                     num_modified += 1
-            self.session.commit()
+            self.session.flush()
         except self.validation_exceptions as exception:
             current_app.logger.exception(str(exception))
             return self._handle_validation_exception(exception)

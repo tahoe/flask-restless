@@ -24,6 +24,7 @@ from sqlalchemy.orm.attributes import InstrumentedAttribute
 from .helpers import session_query
 from .helpers import get_related_association_proxy_model
 from .helpers import primary_key_names
+from .helpers import get_relations
 
 
 def _sub_operator(model, argument, fieldname):
@@ -520,6 +521,10 @@ class QueryBuilder(object):
             query = query.limit(search_params.limit)
         if search_params.offset:
             query = query.offset(search_params.offset)
+
+        # join related columns in so we don't query the fuck out of the database
+        for related in get_relations(model):
+           query = query.join(getattr(model, related), isouter=True)
 
         return query
 

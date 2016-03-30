@@ -524,8 +524,10 @@ class QueryBuilder(object):
 
         # join related columns in so we don't query the fuck out of the database
         # this kinda breaks shit with lots of relations/output
-        #for related in get_relations(model):
-        #   query = query.join(getattr(model, related))#, isouter=True)
+        for related in get_relations(model):
+            if '_exclude_columns' in model.__dict__ and related in model._exclude_columns():
+                continue
+            query = query.join(getattr(model, related), isouter=True)
 
         return query
 

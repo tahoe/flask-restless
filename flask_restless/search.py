@@ -523,8 +523,8 @@ class QueryBuilder(object):
             query = query.offset(search_params.offset)
 
         # join related columns in so we don't query the fuck out of the database
-        #for related in get_relations(model):
-        #   query = query.join(getattr(model, related), isouter=True)
+        for related in get_relations(model):
+           query = query.join(getattr(model, related))#, isouter=True)
 
         return query
 
